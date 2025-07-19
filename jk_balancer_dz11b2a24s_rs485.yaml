@@ -1,0 +1,277 @@
+###   JK-Balancer   ###             Model:   JK-DZ11B2A24S RS485
+
+sensor:
+  - platform: tcpsensor
+    name: jk_bal_1
+    host: 192.1789.xxx.xxx                  ###   add converter ip address
+    port: 25xx                              ###   add converter port
+    timeout: 10
+    scan_interval: 1
+    buffer_size: 74
+    payload: "55 AA 01 FF 00 00 FF" 
+    payload_is_hex: true
+    value_template: "{{ value }}"
+
+template:
+  - sensor:
+      - name: JK_Bal_1_U_Tot
+        unique_id: jk_bal_1_u_tot
+        state: "{{ ((states('sensor.jk_bal_1').split(' ')[4] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[5] |replace('#','') |int(base=16,default=0))) * 10 }}"
+        unit_of_measurement: "V"
+
+      - name: JK_Bal_1_U_Diff
+        unique_id: jk_bal_1_u_diff
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[13] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[14] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_Average_Cell_U
+        unique_id: jk_bal_1_average_cell_u
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[6] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[7] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_Num_Cell
+        unique_id: jk_bal_1_num_cell
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[8] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "Cell"
+
+      - name: JK_Bal_1_Highest_Cell
+        unique_id: jk_bal_1_highest_cell
+        state: >
+            {% set HighestCell = (states('sensor.jk_bal_1').split(' ')[9] |replace('#','') |int(base=8,default=0)) | string %}
+            {% if HighestCell == "0" %}
+              Cella 1
+            {% elif HighestCell == "1" %}
+              Cella 2
+            {% elif HighestCell == "2" %}
+              Cella 3
+            {% elif HighestCell == "3" %}
+              Cella 4
+            {% elif HighestCell == "4" %}
+              Cella 5
+            {% elif HighestCell == "5" %}
+              Cella 6
+            {% elif HighestCell == "6" %}
+              Cella 7
+            {% elif HighestCell == "7" %}
+              Cella 8
+            {% elif HighestCell == "8" %}
+              Cella 9
+            {% elif HighestCell == "9" %}
+              Cella 10
+            {% elif HighestCell == "10" %}
+              Cella 11
+            {% elif HighestCell == "11" %}
+              Cella 12
+            {% elif HighestCell == "12" %}
+              Cella 13
+            {% elif HighestCell == "13" %}
+              Cella 14
+            {% elif HighestCell == "14" %}
+              Cella 15
+            {% elif HighestCell == "15" %}
+              Cella 16
+            {% else %}
+              {{ HighestCell }}
+            {% endif %}
+
+      - name: JK_Bal_1_Lowest_Cell
+        unique_id: jk_bal_1_lowest_cell
+        state: >
+            {% set LowestCell = (states('sensor.jk_bal_1').split(' ')[10] |replace('#','') |int(base=8,default=0)) | string %}
+            {% if LowestCell == "0" %}
+              Cella 1
+            {% elif LowestCell == "1" %}
+              Cella 2
+            {% elif LowestCell == "2" %}
+              Cella 3
+            {% elif LowestCell == "3" %}
+              Cella 4
+            {% elif LowestCell == "4" %}
+              Cella 5
+            {% elif LowestCell == "5" %}
+              Cella 6
+            {% elif LowestCell == "6" %}
+              Cella 7
+            {% elif LowestCell == "7" %}
+              Cella 8
+            {% elif LowestCell == "8" %}
+              Cella 9
+            {% elif LowestCell == "9" %}
+              Cella 10
+            {% elif LowestCell == "10" %}
+              Cella 11
+            {% elif LowestCell == "11" %}
+              Cella 12
+            {% elif LowestCell == "12" %}
+              Cella 13
+            {% elif LowestCell == "13" %}
+              Cella 14
+            {% elif LowestCell == "14" %}
+              Cella 15
+            {% elif LowestCell == "15" %}
+              Cella 16
+            {% else %}
+              {{ LowestCell }}
+            {% endif %}
+
+      - name: JK_Bal_1_Equilibrium_State
+        unique_id: jk_bal_1_equilibrium_state
+        state: >
+            {% set EquilibriumState = (states('sensor.jk_bal_1').split(' ')[11] |replace('#','') |int(base=8,default=0)) | string %}
+            {% if EquilibriumState == "0" %}
+              means balanced batt charging
+            {% elif EquilibriumState == "1" %}
+              means balanced batt discharge
+            {% else %}
+              {{ EquilibriumState }}
+            {% endif %}
+
+      - name: JK_Bal_1_Allarm
+        unique_id: jk_bal_1_allarm
+        state: >
+            {% set Allarm = (states('sensor.jk_bal_1').split(' ')[12] |replace('#','') |int(base=8,default=0)) | string %}
+            {% if Allarm == "0" %}
+              Num Cell Errato
+            {% elif Allarm == "1" %}
+              Resist Int Cell Alta
+            {% elif Allarm == "2" %}
+              Alta Tensione
+            {% else %}
+              {{ Allarm }}
+            {% endif %}
+
+      - name: JK_Bal_1_Max_U_Diff
+        unique_id: jk_bal_1_max_u_diff
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[13] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[14] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_Curr_Ball
+        unique_id: jk_bal_1
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[15] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[16] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mA"
+
+      - name: JK_Bal_1_U_Trig
+        unique_id: jk_bal_1_u_trig
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[17] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[18] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_Max_Curr_Ball
+        unique_id: jk_bal_1_max_curr_ball
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[19] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[20] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mA"
+
+      - name: JK_Bal_1_Ball_State
+        unique_id: jk_bal_1_ball_state
+        state: >
+            {% set BallState = (states('sensor.jk_bal_1').split(' ')[21] |replace('#','') |int(base=8,default=0)) | string %}
+            {% if BallState == "1" %}
+              Off
+            {% elif BallState == "0" %}
+              On
+            {% else %}
+              {{ BallState }}
+            {% endif %}
+
+      - name: JK_Bal_1_Set_Num_Cell
+        unique_id: jk_bal_1_set_num_cell
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[22] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "Cell"
+
+      - name: JK_Bal_1_U_Cell_1
+        unique_id: jk_bal_1_u_cell_1
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[23] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[24] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_2
+        unique_id: jk_bal_1_u_cell_2
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[25] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[26] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_3
+        unique_id: jk_bal_1_u_cell_3
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[27] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[28] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_4
+        unique_id: jk_bal_1_u_cell_4
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[29] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[30] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_5
+        unique_id: jk_bal_1_u_cell_5
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[31] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[32] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_6
+        unique_id: jk_bal_1_u_cell_6
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[33] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[34] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_7
+        unique_id: jk_bal_1_u_cell_7
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[35] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[36] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_8
+        unique_id: jk_bal_1_u_cell_8
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[37] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[38] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_9
+        unique_id: jk_bal_1_u_cell_9
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[39] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[40] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_10
+        unique_id: jk_bal_1_u_cell_10
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[41] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[42] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_11
+        unique_id: jk_bal_1_u_cell_11
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[43] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[44] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_12
+        unique_id: jk_bal_1_u_cell_12
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[45] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[46] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_13
+        unique_id: jk_bal_1_u_cell_13
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[47] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[48] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_14
+        unique_id: jk_bal_1_u_cell_14
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[49] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[50] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_15
+        unique_id: jk_bal_1_u_cell_15
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[51] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[52] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_U_Cell_16
+        unique_id: jk_bal_1_u_cell_16
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[53] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[54] |replace('#','') |int(base=16,default=0)) }}"
+        unit_of_measurement: "mV"
+
+      - name: JK_Bal_1_Temp
+        unique_id: jk_bal_1_temp
+        state: "{{ ((states('sensor.jk_bal_1').split(' ')[71] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[72] |replace('#','') |int(base=16,default=0)) + 45) / 10 }}"
+        unit_of_measurement: "°C"
+
+      - name: JK_Bal_1_Checksum
+        unique_id: jk_bal_1_checksum
+        state: "{{ (states('sensor.jk_bal_1').split(' ')[73] |replace('#','') |int(base=8,default=0)) }}"
+
+
+
+        ##   appunti   ##
+
+
+    #   |replace('#','') |int(base=16,default=0)
+
+
+    #   state: "{{ (states('sensor.jk_bal_1').split(' ')[13] |replace('#','') |int(base=16,default=0)) * 256 + (states('sensor.jk_bal_1').split(' ')[14] |replace('#','') |int(base=16,default=0))  }}"
