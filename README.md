@@ -1,6 +1,6 @@
 # JK-balancer-to-Home-Assistant
 
-# Home Assistant integration of JK Balancer Model: dz11b2a24s with Modbus TCP on rs485 serial port.
+# Home Assistant integration of JK Balancer Model: dz11b2a24s with Modbus TCP Hex String on rs485 serial port.
 
 To make the integration work, you must replace the following values in the code:
 
